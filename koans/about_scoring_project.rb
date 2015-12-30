@@ -31,6 +31,60 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 
 def score(dice)
   # You need to write this method
+  # totalPoints  = 0
+  # totalPoints += 50  if dice   == [5]
+  # totalPoints += 100 if dice   == [1]
+  #return totalPoints
+  #return 0 if dice.empty? ya no se usa por utilizar el result
+  
+
+
+
+
+
+  #variable de instancia accesible entre los metodos
+  @roll = accumulate(dice) 
+  #carrilling variable
+  result = 0
+  #vamos a puntuar los 1 y los 5, los 1=100 y los 5 valen 50
+  result += calculate_score_for_ones
+  result += calculate_score_for_fives
+  result += calculate_score_for_others
+
+  result   
+end
+
+def calculate_score_for_others
+    result = 0
+    [2, 3, 4, 6].each do |i|
+    result += i * 100 if set_of_three?(i)
+    end
+    result
+
+end
+
+def calculate_score_for_ones
+   result = @roll[1] * 100
+   result += 700 if set_of_three?(1)
+   result
+end
+
+def calculate_score_for_fives
+   result = @roll[5] * 50
+   result += 350 if set_of_three?(5)
+   result
+end
+
+def set_of_three?(number)
+  @roll[number] >=3
+end
+
+def accumulate(dice)
+  result = Hash.new(0)
+  dice.each do |i|
+    result[i] += 1 #llenan el hash de información
+  end
+  result
 end
 
 class AboutScoringProject < Neo::Koan
@@ -59,8 +113,8 @@ class AboutScoringProject < Neo::Koan
   end
 
   def test_score_of_other_triples_is_100x
-    assert_equal 200, score([2,2,2])
-    assert_equal 300, score([3,3,3])
+    assert_equal 200, score([2,2,2]) #if number die*100
+    assert_equal 300, score([3,3,3]) #
     assert_equal 400, score([4,4,4])
     assert_equal 500, score([5,5,5])
     assert_equal 600, score([6,6,6])

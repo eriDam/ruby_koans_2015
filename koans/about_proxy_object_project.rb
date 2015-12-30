@@ -16,9 +16,28 @@ class Proxy
   def initialize(target_object)
     @object = target_object
     # ADD MORE CODE HERE
+     @messages = []
   end
 
   # WRITE CODE HERE
+    attr_reader :messages
+def method_missing(sym, *args, &block)
+    @messages << sym
+    @object.send(sym, *args, &block)
+  end
+
+  def brand?
+    "Proxy"
+  end
+
+  def called?(method)
+    @messages.include?(method)
+  end
+
+  def number_of_times_called(method)
+    @messages.select { |m| m == method }.size
+  end
+  #++
 end
 
 # The proxy object should pass the following Koan:
@@ -82,6 +101,12 @@ class AboutProxyObjectProject < Neo::Koan
     assert_equal 0, tv.number_of_times_called(:on?)
   end
 
+  def test_who_wins_betwen_two_equal_method_names
+    tv = Proxy.new(Television.new)
+
+    assert_equal __("Proxy"), tv.brand?
+  end
+
   def test_proxy_can_record_more_than_just_tv_objects
     proxy = Proxy.new("Code Mash 2009")
 
@@ -101,6 +126,10 @@ end
 # Example class using in the proxy testing above.
 class Television
   attr_accessor :channel
+
+  def brand?
+    "Acme"
+  end
 
   def power
     if @power == :on
